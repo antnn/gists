@@ -7,7 +7,7 @@ cat /proc/cmdline
 rd.driver.pre=vfio_pci rd.driver.pre=vfio-pciwq iommu=pt intel_iommu=on kvm.ignore_msrs=1 
 ```
 ##### Add `vfio-pci` to `initramfs` 
-##### Start VM
+##### Start QEMU VM
 ```bash
 #!/bin/bash
 # as root
