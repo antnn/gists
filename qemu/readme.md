@@ -46,14 +46,16 @@ NETWORK_DEVICE="virtio-net"
 MAC_ADDRESS="00:16:cb:00:21:19"
 # 0x28 - Raptor Lake fix. https://github.com/tianocore/edk2/discussions/4662
 CPU="host,host-phys-bits-limit=0x28"
+CORES=32
+RAM="16G"
 args=(
 -display gtk,grab-on-hover=on,full-screen=on
 -machine q35
 -accel kvm
 -cpu $CPU
--m size=17338368k
+-m $RAM
 -overcommit mem-lock=off
--smp 32,sockets=1,dies=1,clusters=1,cores=32,threads=1
+-smp $CORES,sockets=1,dies=1,clusters=1,cores=$CORES,threads=1
 -no-user-config
 -nodefaults
 -rtc base=localtime,driftfix=slew
