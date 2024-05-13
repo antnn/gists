@@ -5,13 +5,8 @@ You may also need to passtrhough usb input devices
 ```bash
 cat /proc/cmdline
 rd.driver.pre=vfio_pci rd.driver.pre=vfio-pciwq iommu=pt intel_iommu=on kvm.ignore_msrs=1 
-
-sudo rpm-ostree initramfs \
-  --enable \
-  --arg="--add-drivers" \
-  --arg="vfio-pci" \
-  --reboot
 ```
+##### Add `vfio-pci` to `initramfs` 
 ##### Start VM
 ```bash
 #!/bin/bash
