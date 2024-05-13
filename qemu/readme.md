@@ -20,6 +20,7 @@ aud="0000:06:00.1"
 gpu_vd="$(cat /sys/bus/pci/devices/$gpu/vendor) $(cat /sys/bus/pci/devices/$gpu/device)"
 aud_vd="$(cat /sys/bus/pci/devices/$aud/vendor) $(cat /sys/bus/pci/devices/$aud/device)"
 
+# Passthrough without reboot
 function bind_vfio {
   echo "$gpu" > "/sys/bus/pci/devices/$gpu/driver/unbind"
   echo "$aud" > "/sys/bus/pci/devices/$aud/driver/unbind"
@@ -41,7 +42,7 @@ function unbind_vfio {
 
 bind_vfio
 
-#QEMU emulator version 8.2.2 (qemu-8.2.2-1.fc40)
+# QEMU emulator version 8.2.2 (qemu-8.2.2-1.fc40)
 NETWORK_DEVICE="virtio-net"
 MAC_ADDRESS="00:16:cb:00:21:19"
 # 0x28 - Raptor Lake fix. https://github.com/tianocore/edk2/discussions/4662
