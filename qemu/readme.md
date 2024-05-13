@@ -14,7 +14,7 @@ sudo rpm-ostree initramfs \
 ##### Start VM
 ```bash
 #!/bin/bash
-# as Root
+# as root
 gpu="0000:06:00.0"
 aud="0000:06:00.1"
 gpu_vd="$(cat /sys/bus/pci/devices/$gpu/vendor) $(cat /sys/bus/pci/devices/$gpu/device)"
