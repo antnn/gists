@@ -1,5 +1,4 @@
 # VM with GPU passthrough
-#### [ROG-STRIX-RX560-4G-V2-GAMING](https://rog.asus.com/graphics-cards/graphics-cards/rog-strix/rog-strix-rx560-4g-v2-gaming-model/helpdesk_download/) 
 
 ##### Add to Linux host Kernel args
 ```bash
