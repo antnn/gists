@@ -1,4 +1,5 @@
 # VM with GPU passthrough without reboots
+Works even with one GPU in the system. Note that you also need to passtrhough usb input devices
 
 ##### Add to Linux host Kernel args
 ```bash
@@ -73,6 +74,9 @@ args=(
 -device '{"driver":"pcie-root-port","port":21,"chassis":6,"id":"pci.6","bus":"pcie.0","addr":"0x2.0x5"}'
 -device '{"driver":"vfio-pci","host":"0000:06:00.0","id":"gpu","bus":"pci.5","addr":"0x0"}'
 -device '{"driver":"vfio-pci","host":"0000:06:00.1","id":"hdmiaudio","bus":"pci.6","addr":"0x0"}'
+# USB_DEV_PASSTHROUGH
+#-device usb-host,vendorid=$vendorid_mouse,productid=$product_mouse
+#-device usb-host,vendorid=$vendorid_kbd,productid=$product_kbd
 #
 -drive id=HDD,if=virtio,file="$HDD",format=qcow2
 # Network
