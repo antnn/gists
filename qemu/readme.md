@@ -1,4 +1,4 @@
-# VM with GPU passthrough
+# VM with GPU passthrough without reboots
 
 ##### Add to Linux host Kernel args
 ```bash
