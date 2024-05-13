@@ -14,6 +14,7 @@ sudo rpm-ostree initramfs \
 ```
 ##### Start VM
 ```bash
+#!/bin/bash
 # as Root
 gpu="0000:06:00.0"
 aud="0000:06:00.1"
