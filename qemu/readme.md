@@ -1,6 +1,6 @@
 # VM with GPU passthrough without reboots
-Works even with one GPU in the system. Note that you may also need to passtrhough usb input devices </br>
-or just hit `Crtl+ALt+F` two times if you have problems with mouse in guest
+Works even with one GPU in the system. Just hit `Crtl+ALt+F` two times if you have problems with mouse in guest </br>
+You may also need to passtrhough usb input devices 
 ##### Add to Linux host Kernel args
 ```bash
 cat /proc/cmdline
