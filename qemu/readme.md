@@ -1,4 +1,5 @@
 # VM with GPU passthrough without reboots
+https://wiki.archlinux.org/title/Special:Contributions/Antnn </br>
 Works even with one GPU in the system. Just hit `Crtl+ALt+F` two times if you have issues with mouse in guest (toggle input grab)</br>
 You may also need to passtrhough usb input devices 
 ##### Add to Linux host Kernel args
@@ -97,4 +98,4 @@ qemu-system-x86_64 "${args[@]}"
 unbind_vfio
 ```
 
-https://wiki.archlinux.org/title/Special:Contributions/Antnn
+
