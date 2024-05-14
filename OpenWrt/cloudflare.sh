@@ -26,7 +26,7 @@ renew_ip() {
 {
   "comment": "Router ip",
   "content": "${IP}",
-  "name": "r.valishin.ru",
+  "name": "$NAME",
   "type": "A",
   "proxied": false,
   "ttl": 1
