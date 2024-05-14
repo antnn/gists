@@ -97,3 +97,4 @@ qemu-system-x86_64 "${args[@]}"
 unbind_vfio
 ```
 
+https://wiki.archlinux.org/title/Special:Contributions/Antnn
