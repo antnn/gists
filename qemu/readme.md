@@ -36,9 +36,7 @@ function unbind_vfio {
   echo 1 > "/sys/bus/pci/rescan"
 }
 
-bind_vfio
-
-# QEMU emulator version 8.2.2 (qemu-8.2.2-1.fc40)
+# Tested on QEMU emulator version 8.2.2 (qemu-8.2.2-1.fc40) and AMD GPU
 NETWORK_DEVICE="virtio-net"
 MAC_ADDRESS="00:16:cb:00:21:19"
 # 0x28 - Raptor Lake fix. https://github.com/tianocore/edk2/discussions/4662
@@ -92,6 +90,9 @@ args=(
 -device virtio-balloon-pci
 
 )
+
+bind_vfio
+
 qemu-system-x86_64 "${args[@]}"
 
 unbind_vfio
