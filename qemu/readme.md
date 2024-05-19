@@ -40,6 +40,7 @@ MAC_ADDRESS="00:16:cb:00:21:19"
 CPU="host,host-phys-bits-limit=0x28"
 CORES=32
 RAM="16G"
+
 args=(
 -display gtk,grab-on-hover=on,full-screen=on
 -machine q35
@@ -85,7 +86,6 @@ args=(
 #
 -device qxl-vga,vgamem_mb=128,vram_size_mb=128
 -device virtio-balloon-pci
-
 )
 
 bind_vfio
