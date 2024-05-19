@@ -17,6 +17,7 @@ gpu_vd="$(cat /sys/bus/pci/devices/$gpu/vendor) $(cat /sys/bus/pci/devices/$gpu/
 aud_vd="$(cat /sys/bus/pci/devices/$aud/vendor) $(cat /sys/bus/pci/devices/$aud/device)"
 
 # Passthrough without reboot
+# https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-bus-pci
 function bind_vfio {
   echo "$gpu" > "/sys/bus/pci/devices/$gpu/driver/unbind"
   echo "$aud" > "/sys/bus/pci/devices/$aud/driver/unbind"
