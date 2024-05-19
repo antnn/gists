@@ -89,9 +89,7 @@ args=(
 )
 
 bind_vfio
-
 qemu-system-x86_64 "${args[@]}"
-
 unbind_vfio
 ```
 
