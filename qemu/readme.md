@@ -3,6 +3,7 @@ Works even with one GPU in the system. Just hit `Crtl+ALt+F` two times if you ha
 You may also need to passtrhough usb input devices 
 ##### Add to Linux host Kernel args
 ```bash
+# Prevent guest BSOD kvm.ignore_msrs=1 (pcmark, cpuz) 
 cat /proc/cmdline
 rd.driver.pre=vfio_pci rd.driver.pre=vfio-pciwq iommu=pt intel_iommu=on kvm.ignore_msrs=1 
 ```
