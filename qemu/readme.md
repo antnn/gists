@@ -59,7 +59,7 @@ args=(
 -boot menu=off,strict=on
 -device qemu-xhci,id=xhci
 # VFIO 
-# PLEASE NOTE: Attaching to root PCI bus causes issues in guest
+# PLEASE NOTE: Attaching to the root PCI bus causes issues in a guest
 # We create a separate PCI root port (pcie.6) and attach the devices to that root port instead of the root PCI bus
 -device '{"driver":"pcie-root-port","port":6,"chassis":1,"id":"pcie.6","bus":"pcie.0","multifunction":true,"addr":"0x6"}'
 -device '{"driver":"vfio-pci","host":"0000:06:00.0","id":"gpu","bus":"pcie.6","multifunction":true,"addr":"0x0"}'
