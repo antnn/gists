@@ -73,7 +73,7 @@ args=(
 -netdev user,id=net0
 -device "$NETWORK_DEVICE",netdev=net0,id=net0,mac="$MAC_ADDRESS"
 #
--device virtio-serial-pci
+-device virtio-serial-pci,addr=0x11
 -usb
 -device usb-kbd
 -device usb-tablet
@@ -84,7 +84,7 @@ args=(
 -device hda-duplex,audiodev=aud1
 #
 -device qxl-vga,vgamem_mb=128,vram_size_mb=128
--device virtio-balloon-pci
+-device virtio-balloon-pci,addr=0x11
 )
 
 bind_vfio
