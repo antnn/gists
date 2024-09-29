@@ -1,7 +1,8 @@
 # VM with GPU passthrough without reboots
-With [looking glass](https://github.com/antnn/gists/blob/main/qemu/looking-glass.sh)
+UPD: With [looking glass](https://github.com/antnn/gists/blob/main/qemu/looking-glass.sh)
 
 ![kvm](https://github.com/antnn/gists/blob/main/qemu/kvm-gpu-passthrough.png?raw=true)
+
 Works even with one GPU in the system. Just hit `Crtl+ALt+F` two times if you have issues with mouse in guest (toggle input grab)</br>
 You may also need to passtrhough usb input devices 
 ##### Add to Linux host Kernel args
