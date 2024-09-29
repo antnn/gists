@@ -39,7 +39,7 @@ args=(
 -name guest=windows11,debug-threads=on
 -blockdev '{"driver":"file","filename":"/usr/share/edk2/ovmf/OVMF_CODE_4M.secboot.qcow2","node-name":"libvirt-pflash0-storage","auto-read-only":true,"discard":"unmap"}'
 -blockdev '{"node-name":"libvirt-pflash0-format","read-only":true,"driver":"qcow2","file":"libvirt-pflash0-storage"}'
--blockdev '{"driver":"file","filename":"$HOME/vm/win11/win11_VARS.qcow2","node-name":"libvirt-pflash1-storage","auto-read-only":true,"discard":"unmap"}'
+-blockdev {"driver":"file","filename":"$HOME/vm/win11/win11_VARS.qcow2","node-name":"libvirt-pflash1-storage","auto-read-only":true,"discard":"unmap"}
 -blockdev '{"node-name":"libvirt-pflash1-format","read-only":false,"driver":"qcow2","file":"libvirt-pflash1-storage"}'
 -machine pc-q35-8.2,vmport=off,smm=on,kernel_irqchip=on,dump-guest-core=off,pflash0=libvirt-pflash0-format,pflash1=libvirt-pflash1-format,hpet=off,acpi=on
 -accel kvm
@@ -84,7 +84,7 @@ args=(
  # -blockdev {"driver":"file","filename":"$HOME/Downloads/virtio-win-0.1.262.iso","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}
  # -blockdev '{"node-name":"libvirt-2-format","read-only":true,"driver":"raw","file":"libvirt-2-storage"}'
  # -device '{"driver":"ide-cd","bus":"ide.0","drive":"libvirt-2-format","id":"sata0-0-0"}'
- # -blockdev '{"driver":"file","filename":"$HOME/Windows.iso","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}'
+ # -blockdev {"driver":"file","filename":"$HOME/Windows.iso","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}
  # -blockdev '{"node-name":"libvirt-1-format","read-only":true,"driver":"raw","file":"libvirt-1-storage"}'
  # -device '{"driver":"ide-cd","bus":"ide.1","drive":"libvirt-1-format","id":"sata0-0-1","bootindex":1}'
   -chardev "pty,id=charserial0"
