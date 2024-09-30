@@ -1,4 +1,11 @@
 #!/bin/bash
+#cat .local/lookinglass/module/load-kvmfr.sh
+( cd $HOME/.local/lookinglass/module/
+  echo Building and loading KVMFR module
+  make
+  sudo insmod kvmfr.ko static_size_mb=256 #4K
+)
+
 VMDIR="$HOME/vm/win11"
 
 gpu="0000:07:00.0"
@@ -7,7 +14,6 @@ gpu_vd="$(cat /sys/bus/pci/devices/$gpu/vendor) $(cat /sys/bus/pci/devices/$gpu/
 aud_vd="$(cat /sys/bus/pci/devices/$aud/vendor) $(cat /sys/bus/pci/devices/$aud/device)"
 echo "gpu_vd=\"$gpu_vd\"" > "$VMDIR/vfio_id"
 echo "aud_vd=\"$aud_vd\"" >> "$VMDIR/vfio_id"
-
 
 function bind_vfio {
   source "$VMDIR/vfio_id"
@@ -157,6 +163,7 @@ args=(
 )
 tpm
 #bind_vfio
+echo -e "After qemu is started, run: \n   sudo chown \$USER:\$USER /dev/kvmfr0 \n   looking-glass-client -f /dev/kvmfr0"
 sudo qemu-system-x86_64 "${args[@]}"
 sudo rm -rf "$TPMSTATE/"*
 #unbind_vfio
