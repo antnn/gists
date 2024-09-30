@@ -1,46 +1,76 @@
 #!/bin/bash
-#cat .local/lookinglass/module/load-kvmfr.sh 
-( cd $HOME/.local/lookinglass/module/
-  make
-  sudo insmod kvmfr.ko static_size_mb=256 #4K
-  sudo chown $USER:$USER /dev/kvmfr0
-)
+VMDIR="$HOME/vm/win11"
 
 gpu="0000:07:00.0"
 aud="0000:07:00.1"
 gpu_vd="$(cat /sys/bus/pci/devices/$gpu/vendor) $(cat /sys/bus/pci/devices/$gpu/device)"
 aud_vd="$(cat /sys/bus/pci/devices/$aud/vendor) $(cat /sys/bus/pci/devices/$aud/device)"
+echo "gpu_vd=\"$gpu_vd\"" > "$VMDIR/vfio_id"
+echo "aud_vd=\"$aud_vd\"" >> "$VMDIR/vfio_id"
+
 
 function bind_vfio {
-  echo "$gpu" > "/sys/bus/pci/devices/$gpu/driver/unbind"
-  echo "$aud" > "/sys/bus/pci/devices/$aud/driver/unbind"
-  echo "$gpu_vd" > /sys/bus/pci/drivers/vfio-pci/new_id
-  echo "$aud_vd" > /sys/bus/pci/drivers/vfio-pci/new_id
+  source "$VMDIR/vfio_id"
+  if [ -f "/sys/bus/pci/devices/$gpu/driver/unbind" ]; then
+    echo "Unbinding GPU: $gpu"
+    echo "$gpu" | sudo tee "/sys/bus/pci/devices/$gpu/driver/unbind" > /dev/null
+  else
+    echo "GPU unbind file not found for $gpu"
+  fi
+  if [ -f "/sys/bus/pci/devices/$aud/driver/unbind" ]; then
+    echo "Unbinding Audio: $aud"
+    echo "$aud" | sudo tee "/sys/bus/pci/devices/$aud/driver/unbind" > /dev/null
+  else
+    echo "Audio unbind file not found for $aud"
+  fi
+  echo "Binding GPU to vfio-pci: $gpu_vd"
+  echo "$gpu_vd" | sudo tee /sys/bus/pci/drivers/vfio-pci/new_id > /dev/null
+  echo "Binding Audio to vfio-pci: $aud_vd"
+  echo "$aud_vd" | sudo tee /sys/bus/pci/drivers/vfio-pci/new_id > /dev/null
 }
 
 function unbind_vfio {
-  echo "$gpu_vd" > "/sys/bus/pci/drivers/vfio-pci/remove_id"
-  echo "$aud_vd" > "/sys/bus/pci/drivers/vfio-pci/remove_id"
-  echo 1 > "/sys/bus/pci/devices/$gpu/remove"
-  echo 1 > "/sys/bus/pci/devices/$aud/remove"
-  echo 1 > "/sys/bus/pci/rescan"
+  source "$VMDIR/vfio_id"
+  if [ -f "/sys/bus/pci/drivers/vfio-pci/remove_id" ]; then
+    echo "Removing GPU from vfio-pci: $gpu_vd"
+    echo "$gpu_vd" | sudo tee "/sys/bus/pci/drivers/vfio-pci/remove_id" > /dev/null
+  else
+    echo "vfio-pci remove_id file not found for GPU"
+  fi
+  if [ -f "/sys/bus/pci/drivers/vfio-pci/remove_id" ]; then
+    echo "Removing Audio from vfio-pci: $aud_vd"
+    echo "$aud_vd" | sudo tee "/sys/bus/pci/drivers/vfio-pci/remove_id" > /dev/null
+  else
+    echo "vfio-pci remove_id file not found for Audio"
+  fi
+  echo "Removing GPU device"
+  echo 1 | sudo tee "/sys/bus/pci/devices/$gpu/remove" > /dev/null
+  echo "Removing Audio device"
+  echo 1 | sudo tee "/sys/bus/pci/devices/$aud/remove" > /dev/null
+  echo "Rescanning PCI bus"
+  echo 1 | sudo tee "/sys/bus/pci/rescan" > /dev/null
+  rm "$VMDIR/vfio_id"
 }
 
+
+TPMSTATE="$VMDIR/tpm2"
+TPMSOCKET="/run/user/$(id -u)/win11-swtpm.sock"
 function tpm() {
-   /usr/bin/swtpm socket --ctrl type=unixio,path=/run/user/1000/win11-swtpm.sock,mode=0600 --tpmstate dir=$HOME/vm/win11/tpm2,mode=0600 --log file=$HOME/.cache/libvirt/qemu/log/win11-swtpm.log --terminate --tpm2 &
+   sudo /usr/bin/swtpm socket --ctrl type=unixio,path="$TPMSOCKET,mode=0600" --tpmstate dir="$TPMSTATE,mode=0600" --log file="$HOME/.cache/libvirt/qemu/log/win11-swtpm.log" --terminate --tpm2 &
 }
 
+MAINDISK="$VMDIR/win11.qcow2"
 NETWORK_DEVICE="virtio-net"
 MAC_ADDRESS="00:16:cb:00:21:19"
 CPU="host,host-phys-bits-limit=0x28,migratable=on,topoext=on,svm=off,apic=on,hypervisor=on,invtsc=on,hv-time=on,hv-relaxed=on,hv-vapic=on,hv-spinlocks=0x1fff,hv-vpindex=on,hv-synic=on,hv-stimer=on,hv-reset=on,hv-vendor-id=1234567890ab,hv-frequencies=on,kvm=off,host-cache-info=on,l3-cache=off"
-# Nested Hyper-V workaround
+# Copy host cpu - Workaround for nested Hyper-V
 CPU="Snowridge,vmx=on,fma=on,avx=on,f16c=on,hypervisor=on,ss=on,tsc-adjust=on,bmi1=on,avx2=on,bmi2=on,invpcid=on,adx=on,pku=on,waitpkg=on,vaes=on,vpclmulqdq=on,rdpid=on,fsrm=on,md-clear=on,serialize=on,stibp=on,flush-l1d=on,avx-vnni=on,fsrs=on,xsaves=on,abm=on,ibpb=on,ibrs=on,amd-stibp=on,amd-ssbd=on,rdctl-no=on,ibrs-all=on,skip-l1dfl-vmentry=on,mds-no=on,pschange-mc-no=on,sbdr-ssdp-no=on,fbsdp-no=on,psdp-no=on,gds-no=on,vmx-ins-outs=on,vmx-true-ctls=on,vmx-store-lma=on,vmx-activity-hlt=on,vmx-activity-wait-sipi=on,vmx-vmwrite-vmexit-fields=on,vmx-apicv-xapic=on,vmx-ept=on,vmx-desc-exit=on,vmx-rdtscp-exit=on,vmx-apicv-x2apic=on,vmx-vpid=on,vmx-wbinvd-exit=on,vmx-unrestricted-guest=on,vmx-apicv-register=on,vmx-apicv-vid=on,vmx-rdrand-exit=on,vmx-invpcid-exit=on,vmx-vmfunc=on,vmx-shadow-vmcs=on,vmx-rdseed-exit=on,vmx-pml=on,vmx-xsaves=on,vmx-tsc-scaling=on,vmx-enable-user-wait-pause=on,vmx-ept-execonly=on,vmx-page-walk-4=on,vmx-ept-2mb=on,vmx-ept-1gb=on,vmx-invept=on,vmx-eptad=on,vmx-invept-single-context=on,vmx-invept-all-context=on,vmx-invvpid=on,vmx-invvpid-single-addr=on,vmx-invvpid-all-context=on,vmx-intr-exit=on,vmx-nmi-exit=on,vmx-vnmi=on,vmx-preemption-timer=on,vmx-posted-intr=on,vmx-vintr-pending=on,vmx-tsc-offset=on,vmx-hlt-exit=on,vmx-invlpg-exit=on,vmx-mwait-exit=on,vmx-rdpmc-exit=on,vmx-rdtsc-exit=on,vmx-cr3-load-noexit=on,vmx-cr3-store-noexit=on,vmx-cr8-load-exit=on,vmx-cr8-store-exit=on,vmx-flexpriority=on,vmx-vnmi-pending=on,vmx-movdr-exit=on,vmx-io-exit=on,vmx-io-bitmap=on,vmx-mtf=on,vmx-msr-bitmap=on,vmx-monitor-exit=on,vmx-pause-exit=on,vmx-secondary-ctls=on,vmx-exit-nosave-debugctl=on,vmx-exit-load-perf-global-ctrl=on,vmx-exit-ack-intr=on,vmx-exit-save-pat=on,vmx-exit-load-pat=on,vmx-exit-save-efer=on,vmx-exit-load-efer=on,vmx-exit-save-preemption-timer=on,vmx-entry-noload-debugctl=on,vmx-entry-ia32e-mode=on,vmx-entry-load-perf-global-ctrl=on,vmx-entry-load-pat=on,vmx-entry-load-efer=on,vmx-eptp-switching=on,mpx=off,cldemote=off,core-capability=off,split-lock-detect=off"
 args=(
 #-display gtk,grab-on-hover=on,full-screen=on
 -name guest=windows11,debug-threads=on
 -blockdev '{"driver":"file","filename":"/usr/share/edk2/ovmf/OVMF_CODE_4M.secboot.qcow2","node-name":"libvirt-pflash0-storage","auto-read-only":true,"discard":"unmap"}'
 -blockdev '{"node-name":"libvirt-pflash0-format","read-only":true,"driver":"qcow2","file":"libvirt-pflash0-storage"}'
--blockdev {"driver":"file","filename":"$HOME/vm/win11/win11_VARS.qcow2","node-name":"libvirt-pflash1-storage","auto-read-only":true,"discard":"unmap"}
+-blockdev '{"driver":"file","filename":"'"$VMDIR"'/win11_VARS.qcow2","node-name":"libvirt-pflash1-storage","auto-read-only":true,"discard":"unmap"}'
 -blockdev '{"node-name":"libvirt-pflash1-format","read-only":false,"driver":"qcow2","file":"libvirt-pflash1-storage"}'
 -machine pc-q35-8.2,vmport=off,smm=on,kernel_irqchip=on,dump-guest-core=off,pflash0=libvirt-pflash0-format,pflash1=libvirt-pflash1-format,hpet=off,acpi=on
 -accel kvm
@@ -79,7 +109,7 @@ args=(
   -device '{"driver":"pcie-pci-bridge","id":"pci.16","bus":"pci.5","addr":"0x0"}'
   -device '{"driver":"qemu-xhci","p2":15,"p3":15,"id":"usb","bus":"pci.2","addr":"0x0"}'
   -device '{"driver":"virtio-serial-pci","id":"virtio-serial0","bus":"pci.3","addr":"0x0"}'
-  -blockdev {"driver":"file","filename":"$HOME/vm/win11/win11.qcow2","node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}
+ -blockdev '{"driver":"file","filename":"'"$MAINDISK"'","node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}'
   -blockdev '{"node-name":"libvirt-3-format","read-only":false,"driver":"qcow2","file":"libvirt-3-storage","backing":null}'
   -device '{"driver":"virtio-blk-pci","bus":"pci.4","addr":"0x0","drive":"libvirt-3-format","id":"virtio-disk0","bootindex":2}'
  # -blockdev {"driver":"file","filename":"$HOME/Downloads/virtio-win-0.1.262.iso","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}
@@ -111,8 +141,6 @@ args=(
   -netdev "user,id=usernet0"
   -device '{"driver":"virtio-net-pci","netdev":"usernet0","id":"net0","mac":"52:54:00:a3:2e:bc","bus":"pci.1","addr":"0x0"}'
 
-
-
 # VFIO
 # PLEASE NOTE: Attaching to the root PCI bus causes issues in a guest
 # We create a separate PCI root port (pcie.6) and attach the devices to that root port instead of the root PCI bus
@@ -120,23 +148,17 @@ args=(
 -device '{"driver":"vfio-pci","host":"0000:07:00.0","id":"gpu","bus":"pcie.6","multifunction":true,"addr":"0x0"}'
 -device '{"driver":"vfio-pci","host":"0000:07:00.1","id":"hdmiaudio","bus":"pcie.6","addr":"0x0.0x1"}'
 #
-
 -monitor stdio
 
 # TPM
--chardev socket,id=chrtpm,path=/run/user/1000/win11-swtpm.sock
+-chardev socket,id=chrtpm,path="$TPMSOCKET"
 -tpmdev emulator,id=tpm-tpm0,chardev=chrtpm
 -device  '{"driver":"tpm-crb","tpmdev":"tpm-tpm0","id":"tpm0"}'
-
-
 )
 tpm
-bind_vfio
-echo -e "After qemu is started, run: \n   sudo chown \$USER:\$USER /dev/kvmfr0 \n   looking-glass-client -f /dev/kvmfr0"
-qemu-system-x86_64 "${args[@]}"
-
-rm -rf $HOME/vm/win11/tpm2/*
-
-
-
+#bind_vfio
+sudo qemu-system-x86_64 "${args[@]}"
+sudo rm -rf "$TPMSTATE/"*
 #unbind_vfio
+
+
