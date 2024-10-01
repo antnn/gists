@@ -1,5 +1,5 @@
 #!/bin/bash
-#RUNS on local machine
+#RUNS on local machine combined config with opendkim and openarc
 sudo tee /etc/opendkim.conf << EOF
 AutoRestart yes
 AutoRestartRate 5/1H
