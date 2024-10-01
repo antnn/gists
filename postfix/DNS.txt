@@ -1,0 +1,62 @@
+;;
+;; Domain:     valishin.ru.
+;; Exported:   2024-10-01 06:47:14
+;;
+;; This file is intended for use for informational and archival
+;; purposes ONLY and MUST be edited before use on a production
+;; DNS server.  In particular, you must:
+;;   -- update the SOA record with the correct authoritative name server
+;;   -- update the SOA record with the contact e-mail address information
+;;   -- update the NS record(s) with the authoritative name servers for this domain.
+;;
+;; For further information, please consult the BIND documentation
+;; located on the following website:
+;;
+;; http://www.isc.org/
+;;
+;; And RFC 1035:
+;;
+;; http://www.ietf.org/rfc/rfc1035.txt
+;;
+;; Please note that we do NOT offer technical support for any use
+;; of this zone data, the BIND name server, or any other third-party
+;; DNS software.
+;;
+;; Use at your own risk.
+;; SOA Record
+valishin.ru	3600	IN	SOA	kristin.ns.cloudflare.com. dns.cloudflare.com. 2047943183 10000 2400 604800 3600
+
+;; NS Records
+valishin.ru.	86400	IN	NS	kristin.ns.cloudflare.com.
+valishin.ru.	86400	IN	NS	zeus.ns.cloudflare.com.
+
+;; A Records
+mail.valishin.ru.	1	IN	A	147.45.163.113
+r.valishin.ru.	1	IN	A	80.249.200.167 ; Router ip
+
+;; CNAME Records
+6wna74ivxsvw.valishin.ru.	1	IN	CNAME	gv-mnwmm3hsglipbc.dv.googlehosted.com.
+_mta-sts.valishin.ru.	1	IN	CNAME	_mta-sts.mx.cloudflare.net.
+valishin.ru.	1	IN	CNAME	valishinav.netlify.app.
+
+;; MX Records
+mail.valishin.ru.	1	IN	MX	20 route3.mx.cloudflare.net.
+mail.valishin.ru.	1	IN	MX	90 route2.mx.cloudflare.net.
+mail.valishin.ru.	1	IN	MX	84 route1.mx.cloudflare.net.
+valishin.ru.	1	IN	MX	20 route3.mx.cloudflare.net.
+valishin.ru.	1	IN	MX	90 route2.mx.cloudflare.net.
+valishin.ru.	1	IN	MX	84 route1.mx.cloudflare.net.
+
+;; TXT Records
+_dmarc.valishin.ru.	1	IN	TXT	"v=DMARC1; p=quarantine; rua=mailto:b244516955ea48868dc86567b7576931@dmarc-reports.cloudflare.net,mailto:dmarc@valishin.uriports.com;ruf=mailto:dmarc@valishin.uriports.com;fo=1:d:s"
+_github-pages-challenge-antnn.valishin.ru.	1	IN	TXT	"9fbb86ca41a0bd597ae51641360f32"
+mail._domainkey.valishin.ru.	1	IN	TXT	"v=DKIM1; k=rsa; t=s; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCoJQEVfRutr6g4ZjKPfKEJ2aviz/5EzwkuEHlpxbHHm++XlqZYfg3W1CfBmWlDfdGmIvvVkFoHbn2S/rMdpZ7u4SIITr/NXH1esKf0jJCuMY8SGAwjHBK3CMgyY7laChriDx0AdIakKnPo10yqBiCx2+AwEOM15lRoyKDnyIUgFwIDAQAB"
+mail.valishin.ru.	1	IN	TXT	"v=spf1 include:_spf.mx.cloudflare.net a ~all"
+marc._domainkey.valishin.ru.	1	IN	TXT	"v=DKIM1; k=rsa; s=email; " "p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8eOd2x9sOUP4SxyauydEJoC037Zbh3aY9Zy7xdYfk8aqRu69owuETG8f4N9l9IdL4PXXNsIwwJN7OvpiVeu8Q7Mhe+6u0heFwzQ5svv/Lni2XCBDgP4jnjcxPaS70Wc8xVZagvffV0LGJ1xxFWFP8ILwEHS2NC9B/xP4mqcvGxQIDAQAB"
+mkey._domainkey.valishin.ru.	1	IN	TXT	"v=DKIM1; k=rsa; " "p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCmp366sAp5SVAWO2wcQVePrnonIXJCFtV3UanKyc+tfTVjFEyiUCrWhltg/5vVoEit7a18wUlKTawfqp8almiUmcG1/uUDTNIPJrpqgR40B56gDnn4asqwYO7e82lHQrR42xWDRCi7OqPrSUBFHxCejQnmOZ65rxjBRzUK3OLCdQIDAQAB"
+r.valishin.ru.	1	IN	TXT	"v=spf1 a -all"
+*.valishin.ru.	1	IN	TXT	"v=spf1 -all"
+valishin.ru.	1	IN	TXT	"v=spf1 include:_spf.yandex.net include:_spf.mx.cloudflare.net a:mail.valishin.ru a:r.valishin.ru ~all"
+valishin.ru.	1	IN	TXT	"yandex-verification:bdd84715e9bc8aa6"
+valishin.ru.	1	IN	TXT	"google-site-verification=ckjhvhtpkZE89dH89NRVpMxxoHU90vZI1fygqMSe240"
+www.valishin.ru.	1	IN	TXT	"v=spf1 -all"
