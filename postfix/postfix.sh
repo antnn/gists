@@ -70,7 +70,7 @@ EOF
 #####
 sudo tee tun.sh << 'EOF'
 #!/bin/bash
-SERVER_NAME="mail.example.com"
+SERVER_NAME="mail.valishin.ru"
 CLIENT_IP="192.168.244.2"
 SERVER_IP="192.168.244.1"
 TUN_NUM="5"
