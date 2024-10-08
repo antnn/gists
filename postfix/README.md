@@ -1,6 +1,6 @@
 Postfix in container `podman`/`docker`
 ```
-podman run --cap-add=NET_ADMIN --device /dev/net/tun  --security-opt label=disable -p $PORT:25 postfix \
+podman run --name postfix --cap-add=NET_ADMIN --device /dev/net/tun  --security-opt label=disable -p $PORT:25 postfix \
   opendkim;
   openarc;
   bash tun &
