@@ -69,44 +69,33 @@ EOF
 
 #####
 sudo tee tun.sh << 'EOF'
-# Resolve the IP address and set it back to HOST
-HOST="CHANGE_HOST"
-RESOLVED_IP=$(dig +short $HOST)
-if [ -n "$RESOLVED_IP" ]; then
-    HOST=$RESOLVED_IP
-else
-    echo "Failed to resolve IP for $HOST"
-    exit 1
-fi
+#!/bin/bash
+SERVER_NAME="mail.example.com"
+CLIENT_IP="192.168.244.2"
+SERVER_IP="192.168.244.1"
+TUN_NUM="5"
+TUN_DEVICE="tun$TUN_NUM"
 
-HOST_PORT=22
-export TUN_LOCAL=0   # tun device number here.
-export TUN_REMOTE=0  # tun device number there
-export IP_LOCAL=192.168.111.2 # IP Address for tun here
-export IP_REMOTE=192.168.111.1 # IP Address for tun there.
-export IP_MASK=30 # Mask of the ips above.
-export NET_REMOTE=192.168.0.0/16 # Network on the other side of the tunnel
-export NET_LOCAL=192.168.8.0/24  # Network on this side of the tunnel
+# SSH command
+ssh -i /id_rsa -o PermitLocalCommand=yes \
+    -o LocalCommand="
+        sudo ip addr add $CLIENT_IP peer $SERVER_IP/31 dev $TUN_DEVICE;
+        sudo ip link set dev $TUN_DEVICE up;
+        sudo ip route add default via $SERVER_IP dev $TUN_DEVICE metric 60
+    " \
+    -o ServerAliveInterval=60 \
+    -o ExitOnForwardFailure=yes \
+    -o Tunnel=point-to-point \
+    -w $TUN_NUM:$TUN_NUM \
+    $SERVER_NAME \
+    "
+    # Dynamically determine the default network interface on the server
+    DEFAULT_IFACE=\$(ip route | awk '/default/ {print \$5; exit}')
 
-echo "Starting VPN tunnel ..."
-#ip route add $HOST via 192.168.113.173 dev eno0
-ssh -i id_ssh \
-       -w ${TUN_LOCAL}:${TUN_REMOTE} -f ${HOST} -p ${HOST_PORT} "\
-       sysctl -w net.ipv4.ip_forward=1 ; \
-       ip addr add ${IP_REMOTE}/${IP_MASK} dev tun${TUN_REMOTE} ; \
-       ip link set tun${TUN_REMOTE} up ; \
-       iptables -t filter -F FORWARD ; \
-       iptables -t nat -F POSTROUTING ; \
-       iptables -t filter -I FORWARD -j ACCEPT ; \
-       iptables -t nat -I POSTROUTING -j MASQUERADE ; \
-       iptables -t mangle -A PREROUTING -i tun0 -j TTL --ttl-set 64 ; \
-       true; \
-       while true; do sleep 10000000000 ; done;
-" &
-sleep 3
-ip addr add ${IP_LOCAL}/${IP_MASK} dev tun${TUN_LOCAL}
-ip link set tun${TUN_LOCAL} up
-ip r add $HOST via 192.168.1.2 dev eno1
-ip r del default
-ip route add default via ${IP_REMOTE}  dev tun0
+    sudo ip addr add $SERVER_IP peer $CLIENT_IP/31 dev $TUN_DEVICE;
+    sudo ip link set dev $TUN_DEVICE up;
+    sudo iptables -t nat -D POSTROUTING -s $CLIENT_IP/31 -o \$DEFAULT_IFACE -j MASQUERADE;
+    sudo iptables -t nat -A POSTROUTING -s $CLIENT_IP/31 -o \$DEFAULT_IFACE -j MASQUERADE;
+    echo $TUN_DEVICE ready, NAT interface: \$DEFAULT_IFACE
+    "
 EOF
