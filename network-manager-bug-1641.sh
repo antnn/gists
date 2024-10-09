@@ -2,6 +2,8 @@
 #######
 # REPRODUCTION FOR THE BUG 
 # https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/issues/1641
+# Relevant code? 
+# https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/blob/main/src/core/vpn/nm-vpn-connection.c#L1215
 #######
 # Set variables
 IMAGE_NAME="sstp-server-test"
