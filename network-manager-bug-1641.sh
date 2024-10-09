@@ -1,6 +1,6 @@
 #!/bin/bash
 #######
-# REPRODUCTION FOR BUG 
+# REPRODUCTION FOR THE BUG 
 # https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/issues/1641
 #######
 # Set variables
