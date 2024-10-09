@@ -96,7 +96,7 @@ sudo ip link set $VETH_HOST up
 sudo nsenter -t $CONTAINER_PID -n ip addr add $CONTAINER_IP dev $VETH_CONTAINER
 sudo nsenter -t $CONTAINER_PID -n ip link set $VETH_CONTAINER up
 
-#echo Set the password for connection via gui if it is empty
+#echo Set the password for connection via gui if it is empty and set "Ignore certificate warnings"
 nmcli connection add \
     type vpn \
     con-name "$VPN_CONNECTION_NAME" \
