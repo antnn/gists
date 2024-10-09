@@ -1,7 +1,8 @@
 #!/bin/bash
-#https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/issues/1641
-
-
+#######
+# REPRODUCTION FOR BUG 
+# https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/issues/1641
+#######
 # Set variables
 IMAGE_NAME="sstp-server-test"
 SERVER_PASSWORD=ServerPassword123
