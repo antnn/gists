@@ -3,7 +3,7 @@
 # REPRODUCTION FOR THE BUG 
 # https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/issues/1641
 # Relevant code? 
-# https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/blob/main/src/core/vpn/nm-vpn-connection.c#L1215
+# https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/blob/bb6881f88c256a7f91ed4ad78f76f0b6c86a681a/src/core/vpn/nm-vpn-connection.c#L1215
 #######
 # Set variables
 IMAGE_NAME="sstp-server-test"
