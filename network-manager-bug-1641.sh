@@ -63,8 +63,6 @@ EOF
 podman build --no-cache -t $IMAGE_NAME -f Dockerfile.tmp .
 rm Dockerfile.tmp
 
-podman run   --replace   --name $CONTAINER_NAME  $IMAGE_NAME
-
 CONTAINER_NAME="sstp_server"
 podman run -d \
   --replace \
