@@ -71,17 +71,17 @@ EOF
 sudo tee tun.sh << 'EOF'
 #!/bin/bash
 SERVER_NAME="mail.valishin.ru"
-CLIENT_IP="192.168.244.2"
+CLIENT_IP="192.168.244.10"
 SERVER_IP="192.168.244.1"
-TUN_NUM="5"
+TUN_NUM="10"
 TUN_DEVICE="tun$TUN_NUM"
 
 # SSH command
-ssh -i /id_rsa -o PermitLocalCommand=yes \
+ssh -vvv -i id_ssh -o PermitLocalCommand=yes \
     -o LocalCommand="
         sudo ip addr add $CLIENT_IP peer $SERVER_IP/31 dev $TUN_DEVICE;
         sudo ip link set dev $TUN_DEVICE up;
-        sudo ip route add default via $SERVER_IP dev $TUN_DEVICE metric 60
+        sudo ip route add default via $SERVER_IP dev $TUN_DEVICE metric 10
     " \
     -o ServerAliveInterval=60 \
     -o ExitOnForwardFailure=yes \
@@ -89,6 +89,7 @@ ssh -i /id_rsa -o PermitLocalCommand=yes \
     -w $TUN_NUM:$TUN_NUM \
     $SERVER_NAME \
     "
+    sysctl -w net.ipv4.ip_forward=1
     # Dynamically determine the default network interface on the server
     DEFAULT_IFACE=\$(ip route | awk '/default/ {print \$5; exit}')
 
@@ -96,6 +97,10 @@ ssh -i /id_rsa -o PermitLocalCommand=yes \
     sudo ip link set dev $TUN_DEVICE up;
     sudo iptables -t nat -D POSTROUTING -s $CLIENT_IP/31 -o \$DEFAULT_IFACE -j MASQUERADE;
     sudo iptables -t nat -A POSTROUTING -s $CLIENT_IP/31 -o \$DEFAULT_IFACE -j MASQUERADE;
+    sudo iptables -A FORWARD -o $TUN_DEVICE -j ACCEPT
+    sudo iptables -A FORWARD -i $TUN_DEVICE -j ACCEPT
+
     echo $TUN_DEVICE ready, NAT interface: \$DEFAULT_IFACE
     "
+
 EOF
